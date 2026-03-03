@@ -8,23 +8,27 @@ setup_logging()
 
 app = FastAPI(title="SHL Elite v3 API")
 
-rag = None
+rag = None  # do NOT load at startup
 
-@app.on_event("startup")
-def load_model():
-    global rag
-    DATA_PATH = "data/Gen_AI Dataset.xlsx"
-    rag = SHLEliteRAG(DATA_PATH)
 
 class QueryRequest(BaseModel):
     query: str
     k: int = 5
     threshold: float = 0.3
 
+
 @app.post("/recommend")
 def recommend(request: QueryRequest):
+    global rag
+
+    if rag is None:
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        DATA_PATH = os.path.join(BASE_DIR, "..", "data", "Gen_AI Dataset.xlsx")
+        rag = SHLEliteRAG(DATA_PATH)
+
     results = rag.search(request.query, request.k, request.threshold)
     return {"results": results}
+
 
 @app.get("/health")
 def health():
