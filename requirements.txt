@@ -1,0 +1,12 @@
+
+fastapi
+uvicorn
+pandas
+numpy
+faiss-cpu
+sentence-transformers
+scikit-learn
+transformers
+requests
+beautifulsoup4
+python-json-logger
